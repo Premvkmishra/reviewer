@@ -1,0 +1,70 @@
+# ========================================
+# FREE API CONFIGURATION FOR CODE ANALYSIS
+# ========================================
+
+# Option 1: Hugging Face API (FREE - 30,000 requests/month)
+# Get your token from: https://huggingface.co/settings/tokens
+HF_API_TOKEN=your_huggingface_api_token_here
+
+# Option 2: OpenAI API (FREE - $5 credit, about 1000-2000 requests)
+# Get your key from: https://platform.openai.com/api-keys
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Option 3: Anthropic Claude API (FREE tier)
+# Get your key from: https://console.anthropic.com/
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+
+# ========================================
+# GITHUB INTEGRATION (Optional)
+# ========================================
+
+# GitHub Personal Access Token (for webhooks)
+GITHUB_TOKEN=your_github_personal_access_token_here
+WEBHOOK_SECRET=your_webhook_secret_here
+
+# ========================================
+# DATABASE & BACKEND CONFIGURATION
+# ========================================
+
+# Database path (SQLite)
+DB_PATH=./code_review.db
+
+# Backend URL for frontend
+BACKEND_URL=http://localhost:8000/api
+
+# ========================================
+# SETUP INSTRUCTIONS
+# ========================================
+
+# 1. HUGGING FACE (Recommended - Completely Free):
+#    - Go to https://huggingface.co/
+#    - Create account and sign in
+#    - Go to Settings → Access Tokens
+#    - Create new token with "read" permissions
+#    - Copy token to HF_API_TOKEN above
+
+# 2. OPENAI (Free $5 Credit):
+#    - Go to https://platform.openai.com/
+#    - Create account
+#    - Go to API Keys section
+#    - Create new API key
+#    - Copy key to OPENAI_API_KEY above
+
+# 3. ANTHROPIC CLAUDE (Free Tier):
+#    - Go to https://console.anthropic.com/
+#    - Create account
+#    - Generate API key
+#    - Copy key to ANTHROPIC_API_KEY above
+
+# ========================================
+# USAGE NOTES
+# ========================================
+
+# The app will try APIs in this order:
+# 1. Hugging Face (if HF_API_TOKEN is set)
+# 2. OpenAI (if OPENAI_API_KEY is set)
+# 3. Anthropic (if ANTHROPIC_API_KEY is set)
+# 4. Fallback to rule-based analysis (always works)
+
+# You only need ONE API key to get started!
+# Hugging Face is recommended as it's completely free. 
