@@ -3,6 +3,8 @@ from pydantic import BaseModel
 from typing import Optional
 import io
 from app.services.huggingface import analyze_code
+from app.services.github import get_pr_diff
+import re
 
 router = APIRouter()
 
@@ -15,6 +17,14 @@ class AnalysisResponse(BaseModel):
     language_detected: Optional[str] = None
     analysis_time: float
     code_length: int
+
+class PRReviewRequest(BaseModel):
+    pr_url: str
+
+class PRReviewResponse(BaseModel):
+    markdown_feedback: str
+    analysis_time: float
+    pr_url: str
 
 @router.post("/analyze")
 async def analyze_endpoint(input: CodeInput):
@@ -108,4 +118,25 @@ async def get_supported_languages():
             {"code": "sql", "name": "SQL", "extensions": [".sql"]},
             {"code": "shell", "name": "Shell", "extensions": [".sh", ".bash"]}
         ]
-    } 
+    }
+
+@router.post("/review-pr", response_model=PRReviewResponse)
+async def review_pr_endpoint(input: PRReviewRequest):
+    # Extract owner, repo, and PR number from URL
+    match = re.match(r"https://github.com/([^/]+)/([^/]+)/pull/(\\d+)", input.pr_url)
+    if not match:
+        raise HTTPException(status_code=400, detail="Invalid PR URL format. Use https://github.com/owner/repo/pull/123")
+    owner, repo, pr_number = match.group(1), match.group(2), int(match.group(3))
+    try:
+        import time
+        start_time = time.time()
+        diff = await get_pr_diff(owner, repo, pr_number)
+        feedback = await analyze_code(diff, language=None)
+        analysis_time = time.time() - start_time
+        return PRReviewResponse(
+            markdown_feedback=feedback,
+            analysis_time=round(analysis_time, 2),
+            pr_url=input.pr_url
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"PR review failed: {str(e)}") 

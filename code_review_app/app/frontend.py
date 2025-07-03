@@ -27,3 +27,23 @@ if st.button("Analyze"):
 
 st.markdown("---")
 st.write("For GitHub PR integration, configure a webhook pointing to `<your-domain>/api/webhook`")
+
+# --- PR Review Section ---
+st.header("Review a GitHub Pull Request")
+pr_url = st.text_input("Enter GitHub PR URL (e.g., https://github.com/owner/repo/pull/123)")
+if st.button("Review PR"):
+    if not pr_url:
+        st.error("Please enter a PR URL")
+    else:
+        with st.spinner("Reviewing PR..."):
+            try:
+                response = httpx.post(
+                    f"{BACKEND_URL}/review-pr",
+                    json={"pr_url": pr_url},
+                    timeout=60
+                )
+                response.raise_for_status()
+                feedback = response.json()["markdown_feedback"]
+                st.markdown(feedback)
+            except Exception as e:
+                st.error(f"Error: {str(e)}")
